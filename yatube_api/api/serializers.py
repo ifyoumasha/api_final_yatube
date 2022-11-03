@@ -37,7 +37,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class FollowSerializer(serializers.ModelSerializer):
     user = SlugRelatedField(
         slug_field='username',
-        queryset=User.objects.all(),
+        read_only=True,
         default=serializers.CurrentUserDefault()
     )
     following = SlugRelatedField(
@@ -57,7 +57,7 @@ class FollowSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
-        if data['user'] == data['following']:
+        if self.context['request'].user == data['following']:
             raise serializers.ValidationError(
                 'Имя подписчика не может совпадать с именем автора.'
             )
